@@ -61,6 +61,8 @@ public class ParkingFeeCalculator
         bool isHoliday = false)
     {
         var totalMinutes = (decimal)(checkOut - checkIn).TotalMinutes;
+        if (totalMinutes <= GracePeriodMinutes)
+            return new ParkingFeeResult { BaseFee = 0m, TotalFee = 0m };
         var billableHours = (int)(totalMinutes / 60);
         if (billableHours < 1) billableHours = 1;
 
