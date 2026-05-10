@@ -36,6 +36,22 @@ public class ParkingFeeCalculator
 
     // Penalties
     private const decimal LostTicketPenalty = 20_000m;
+    
+    private static decimal GetHourlyRate(VehicleType v) => v switch
+    {
+        VehicleType.Motorcycle => MotorcycleRatePerHour,
+        VehicleType.Car        => CarRatePerHour,
+        VehicleType.SUV        => SuvRatePerHour,
+        _                      => throw new ArgumentOutOfRangeException(nameof(v))
+    };
+
+    private static decimal GetDailyCap(VehicleType v) => v switch
+    {
+        VehicleType.Motorcycle => MotorcycleDailyCap,
+        VehicleType.Car        => CarDailyCap,
+        VehicleType.SUV        => SuvDailyCap,
+        _                      => decimal.MaxValue
+    };
 
     /// <summary>
     /// Calculates the parking fee following the 9-step flow in the spec.
@@ -66,22 +82,10 @@ public class ParkingFeeCalculator
         var billableHours = Math.Ceiling((totalMinutes - GracePeriodMinutes) / 60.0m);
         if (billableHours < 1) billableHours = 1;
 
-        decimal hourlyRate = vehicleType switch
-        {
-            VehicleType.Motorcycle => MotorcycleRatePerHour,
-            VehicleType.Car        => CarRatePerHour,
-            VehicleType.SUV        => SuvRatePerHour,
-            _                      => throw new ArgumentOutOfRangeException(nameof(vehicleType))
-        };
+        decimal hourlyRate = GetHourlyRate(vehicleType);
         var baseFee = billableHours * hourlyRate;
-        
-        decimal dailyCap = vehicleType switch
-        {
-            VehicleType.Motorcycle => MotorcycleDailyCap,
-            VehicleType.Car        => CarDailyCap,
-            VehicleType.SUV        => SuvDailyCap,
-            _                      => decimal.MaxValue
-        };
+
+        decimal dailyCap = GetDailyCap(vehicleType);
         baseFee = Math.Min(baseFee, dailyCap);
 
         return new ParkingFeeResult { BaseFee = baseFee, TotalFee = baseFee };
