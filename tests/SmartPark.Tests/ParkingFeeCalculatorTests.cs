@@ -169,6 +169,27 @@ public class ParkingFeeCalculatorTests
 
     #region Holiday Surcharge
     // Test holiday pricing and its interaction with weekend pricing
+    [Fact]
+    public void CalculateFee_HolidaySurcharge_AppliesFiftyPercent()
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 10, 0, 0); // Monday
+        var checkOut = checkIn.AddHours(2);
+
+        var result = _calculator.CalculateFee(VehicleType.Car, MembershipTier.Guest, checkIn, checkOut, isHoliday: true);
+
+        Assert.Equal(3000m, result.TotalFee); // 2,000 + 1,000 holiday surcharge
+    }
+
+    [Fact]
+    public void CalculateFee_HolidayOnWeekend_UsesHolidayRateOnly()
+    {
+        var checkIn  = new DateTime(2026, 3, 14, 10, 0, 0); // Saturday
+        var checkOut = checkIn.AddHours(2);
+
+        var result = _calculator.CalculateFee(VehicleType.Car, MembershipTier.Guest, checkIn, checkOut, isHoliday: true);
+
+        Assert.Equal(3000m, result.TotalFee); // holiday wins — no weekend stacking
+    }
     #endregion
 
     #region Membership Discounts
