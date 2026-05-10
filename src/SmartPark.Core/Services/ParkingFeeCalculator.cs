@@ -96,11 +96,21 @@ public class ParkingFeeCalculator
         var surcharge = isHoliday ? baseFee * HolidaySurchargeRate  :
                                 isWeekend ? baseFee * WeekendSurchargeRate : 0m;
         
+        decimal discountRate = membership switch
+        {
+            MembershipTier.Silver   => SilverDiscountRate,
+            MembershipTier.Gold     => GoldDiscountRate,
+            MembershipTier.Platinum => PlatinumDiscountRate,
+            _                       => 0m
+        };
+        var discount = (baseFee + surcharge) * discountRate;
+        
         return new ParkingFeeResult
         {
             BaseFee = baseFee,
-            SurchargeAmount = surcharge, 
-            TotalFee = baseFee + surcharge + overnight
+            SurchargeAmount = surcharge,
+            DiscountAmount  = discount, 
+            TotalFee = Math.Max(0m, baseFee + surcharge - discount + overnight)
         };
     }
 }
