@@ -52,6 +52,14 @@ public class ParkingFeeCalculator
         VehicleType.SUV        => SuvDailyCap,
         _                      => decimal.MaxValue
     };
+    
+    private static decimal GetDiscountRate(MembershipTier tier) => tier switch
+    {
+        MembershipTier.Silver   => SilverDiscountRate,
+        MembershipTier.Gold     => GoldDiscountRate,
+        MembershipTier.Platinum => PlatinumDiscountRate,
+        _                       => 0m
+    };
 
     /// <summary>
     /// Calculates the parking fee following the 9-step flow in the spec.
@@ -102,13 +110,7 @@ public class ParkingFeeCalculator
         var surcharge = isHoliday ? baseFee * HolidaySurchargeRate  :
                                 isWeekend ? baseFee * WeekendSurchargeRate : 0m;
         
-        decimal discountRate = membership switch
-        {
-            MembershipTier.Silver   => SilverDiscountRate,
-            MembershipTier.Gold     => GoldDiscountRate,
-            MembershipTier.Platinum => PlatinumDiscountRate,
-            _                       => 0m
-        };
+        decimal discountRate = GetDiscountRate(membership);
         var discount = (baseFee + surcharge) * discountRate;
         var lostPenalty = isLostTicket ? LostTicketPenalty : 0m;
         
