@@ -92,6 +92,14 @@ public class ParkingFeeCalculator
         var overnight = (checkOut > overnightThreshold || checkIn >= overnightThreshold)
             ? OvernightFlatFee : 0m;
 
-        return new ParkingFeeResult { BaseFee = baseFee, TotalFee = baseFee + overnight };
+        var isWeekend = checkIn.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+        var surcharge = isWeekend ? baseFee * WeekendSurchargeRate : 0m;
+        
+        return new ParkingFeeResult
+        {
+            BaseFee = baseFee,
+            SurchargeAmount = surcharge, 
+            TotalFee = baseFee + surcharge + overnight
+        };
     }
 }
