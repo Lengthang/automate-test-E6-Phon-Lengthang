@@ -194,6 +194,19 @@ public class ParkingFeeCalculatorTests
 
     #region Membership Discounts
     // Test discount tiers and what amounts they apply to
+    [Theory]
+    [InlineData(MembershipTier.Silver,   1800)]  // 2,000 − 10% = 1,800
+    [InlineData(MembershipTier.Gold,     1500)]  // 2,000 − 25% = 1,500
+    [InlineData(MembershipTier.Platinum, 1200)]  // 2,000 − 40% = 1,200
+    public void CalculateFee_MembershipDiscount_AppliesCorrectRate(MembershipTier tier, decimal expected)
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 10, 0, 0);
+        var checkOut = checkIn.AddHours(2);
+
+        var result = _calculator.CalculateFee(VehicleType.Car, tier, checkIn, checkOut);
+
+        Assert.Equal(expected, result.TotalFee);
+    }
     #endregion
 
     #region Lost Ticket
