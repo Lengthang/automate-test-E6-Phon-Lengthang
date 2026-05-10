@@ -64,6 +64,19 @@ public class ParkingFeeCalculatorTests
 
     #region Grace Period
     // Test the free parking window and its boundaries
+    [Theory]
+    [InlineData(0)]
+    [InlineData(29)]
+    [InlineData(30)]
+    public void CalculateFee_GracePeriod_ReturnsFree(int minutes)
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 10, 0, 0);
+        var checkOut = checkIn.AddMinutes(minutes);
+
+        var result = _calculator.CalculateFee(VehicleType.Car, MembershipTier.Guest, checkIn, checkOut);
+
+        Assert.Equal(0m, result.TotalFee);
+    }
     #endregion
 
     #region Duration Rounding
