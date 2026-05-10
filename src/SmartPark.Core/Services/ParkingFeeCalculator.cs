@@ -93,7 +93,8 @@ public class ParkingFeeCalculator
             ? OvernightFlatFee : 0m;
 
         var isWeekend = checkIn.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
-        var surcharge = isWeekend ? baseFee * WeekendSurchargeRate : 0m;
+        var surcharge = isHoliday ? baseFee * HolidaySurchargeRate  :
+                                isWeekend ? baseFee * WeekendSurchargeRate : 0m;
         
         return new ParkingFeeResult
         {
