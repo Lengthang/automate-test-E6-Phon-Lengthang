@@ -81,6 +81,18 @@ public class ParkingFeeCalculatorTests
 
     #region Duration Rounding
     // Test how partial hours are rounded for billing
+    [Theory]
+    [InlineData(91,  2000)]  // 61 min past grace → ceil(61/60) = 2 hours
+    [InlineData(151, 3000)]  // 121 min past grace → ceil(121/60) = 3 hours
+    public void CalculateFee_DurationRounding_CeilsToNextHour(int totalMinutes, decimal expected)
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 10, 0, 0);
+        var checkOut = checkIn.AddMinutes(totalMinutes);
+
+        var result = _calculator.CalculateFee(VehicleType.Car, MembershipTier.Guest, checkIn, checkOut);
+
+        Assert.Equal(expected, result.TotalFee);
+    }
     #endregion
 
     #region Daily Cap
