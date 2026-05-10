@@ -45,6 +45,20 @@ public class ParkingFeeCalculatorTests
         // Assert
         Assert.Equal(1000m, result.TotalFee);
     }
+    
+    [Theory]
+    [InlineData(VehicleType.Motorcycle, 3, 3000)]
+    [InlineData(VehicleType.SUV, 1, 1500)]
+    public void CalculateFee_BasicRate_ReturnsCorrectFee(VehicleType vehicleType, int hours, decimal expected)
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 10, 0, 0);
+        var checkOut = checkIn.AddHours(hours);
+
+        var result = _calculator.CalculateFee(
+            vehicleType, MembershipTier.Guest, checkIn, checkOut);
+
+        Assert.Equal(expected, result.TotalFee);
+    }
 
     #endregion
 
