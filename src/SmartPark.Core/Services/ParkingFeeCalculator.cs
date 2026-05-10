@@ -87,7 +87,11 @@ public class ParkingFeeCalculator
 
         decimal dailyCap = GetDailyCap(vehicleType);
         baseFee = Math.Min(baseFee, dailyCap);
+        
+        var overnightThreshold = checkIn.Date.AddHours(OvernightHourThreshold);
+        var overnight = (checkOut > overnightThreshold || checkIn >= overnightThreshold)
+            ? OvernightFlatFee : 0m;
 
-        return new ParkingFeeResult { BaseFee = baseFee, TotalFee = baseFee };
+        return new ParkingFeeResult { BaseFee = baseFee, TotalFee = baseFee + overnight };
     }
 }
