@@ -97,6 +97,19 @@ public class ParkingFeeCalculatorTests
 
     #region Daily Cap
     // Test that fees respect maximum daily limits per vehicle type
+    [Theory]
+    [InlineData(VehicleType.Motorcycle, 10,  4_000)]  // 10h × 500 = 5,000 → capped at 4,000
+    [InlineData(VehicleType.Car,        12,  8_000)]  // 12h × 1,000 = 12,000 → capped at 8,000
+    [InlineData(VehicleType.SUV,        24, 12_000)]  // 24h × 1,500 = 36,000 → capped at 12,000
+    public void CalculateFee_DailyCap_FeeNeverExceedsCap(VehicleType vehicleType, int hours, decimal expected)
+    {
+        var checkIn  = new DateTime(2026, 3, 16, 8, 0, 0);
+        var checkOut = checkIn.AddHours(hours);
+
+        var result = _calculator.CalculateFee(vehicleType, MembershipTier.Guest, checkIn, checkOut);
+
+        Assert.Equal(expected, result.TotalFee);
+    }
     #endregion
 
     #region Overnight Fee
