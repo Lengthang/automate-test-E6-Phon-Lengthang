@@ -76,6 +76,9 @@ public class ParkingFeeCalculator
         bool isLostTicket = false,
         bool isHoliday = false)
     {
+        if (checkOut < checkIn)
+            throw new ArgumentException("checkOut must not be before checkIn.", nameof(checkOut));
+        
         var totalMinutes = (decimal)(checkOut - checkIn).TotalMinutes;
         if (totalMinutes <= GracePeriodMinutes)
         {
