@@ -60,16 +60,17 @@ public class ParkingFeeCalculator
         bool isLostTicket = false,
         bool isHoliday = false)
     {
-        // TODO: Implement the 9-step fee calculation using TDD.
-        // Write a failing test first (RED), then implement just enough to pass (GREEN).
-        // throw new NotImplementedException(
-        //     "Implement this method using TDD — see the assignment spec for the 9-step calculation flow.");
-        
         var totalMinutes = (decimal)(checkOut - checkIn).TotalMinutes;
         var billableHours = (int)(totalMinutes / 60);
         if (billableHours < 1) billableHours = 1;
 
-        decimal hourlyRate = vehicleType == VehicleType.Motorcycle ? MotorcycleRatePerHour : 0m;
+        decimal hourlyRate = vehicleType switch
+        {
+            VehicleType.Motorcycle => MotorcycleRatePerHour,
+            VehicleType.Car        => CarRatePerHour,
+            VehicleType.SUV        => SuvRatePerHour,
+            _                      => throw new ArgumentOutOfRangeException(nameof(vehicleType))
+        };
         var baseFee = billableHours * hourlyRate;
 
         return new ParkingFeeResult { BaseFee = baseFee, TotalFee = baseFee };

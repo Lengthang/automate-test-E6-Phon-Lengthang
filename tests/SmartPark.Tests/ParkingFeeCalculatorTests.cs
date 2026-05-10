@@ -47,7 +47,7 @@ public class ParkingFeeCalculatorTests
     }
     
     [Theory]
-    [InlineData(VehicleType.Motorcycle, 3, 3000)]
+    [InlineData(VehicleType.Car, 3, 3000)]
     [InlineData(VehicleType.SUV, 1, 1500)]
     public void CalculateFee_BasicRate_ReturnsCorrectFee(VehicleType vehicleType, int hours, decimal expected)
     {
